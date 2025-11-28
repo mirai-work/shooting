@@ -25,29 +25,28 @@ class App:
     def in_button(self, btn, mx, my):
         x1, y1, x2, y2 = btn
         return x1 <= mx <= x2 and y1 <= my <= y2
-
-def update(self):
-    if self.game_over:
+    def update(self):
+        if self.game_over:
         if pyxel.btnp(pyxel.KEY_R) or pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON):
             self.reset_game()
         return
 
     # --- 自機の移動 ---
-    if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
+        if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
         self.player_x = max(self.player_x - 2, 0)
-    if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
+        if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
         self.player_x = min(self.player_x + 2, 152)
 
     # --- 自動発射（shoot変数は完全削除） ---
-    self.shoot_timer += 1
-    if self.shoot_timer > 6:   # ここで発射間隔を調整（小さいほど連射）
+        self.shoot_timer += 1
+        if self.shoot_timer > 6:   # ここで発射間隔を調整（小さいほど連射）
         self.bullets.append([self.player_x + 4, self.player_y])
         self.shoot_timer = 0
 
     # --- 弾の更新 ---
-    for b in self.bullets:
+        for b in self.bullets:
         b[1] -= 4
-    self.bullets = [b for b in self.bullets if b[1] > 0]
+        self.bullets = [b for b in self.bullets if b[1] > 0]
 
         # 敵の生成
         self.spawn_timer += 1
@@ -110,3 +109,4 @@ def update(self):
 
 
 App()
+

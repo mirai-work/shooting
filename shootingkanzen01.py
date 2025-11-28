@@ -146,7 +146,7 @@ class Player:
         self.power = 1
 
     def update(self):
-    dx = dy = 0
+        dx = dy = 0
         if pyxel.btn(pyxel.KEY_UP): dy = -2
         if pyxel.btn(pyxel.KEY_DOWN): dy = 2
         if pyxel.btn(pyxel.KEY_LEFT): dx = -2
@@ -914,4 +914,5 @@ class App:
 # Appクラスのインスタンス化と実行
 
 App()
+
 

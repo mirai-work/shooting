@@ -912,4 +912,5 @@ class App:
                 pyxel.text(center_x - len(end_text)*2, center_y, end_text, 7)
                 
 # Appクラスのインスタンス化と実行
+
 App()

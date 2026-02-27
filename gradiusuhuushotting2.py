@@ -910,6 +910,86 @@ class App:
                 end_text = "DRAGON SLAYER"
                 pyxel.text(center_x - len(end_text)*2 + 1, center_y + 1, end_text, 0)
                 pyxel.text(center_x - len(end_text)*2, center_y, end_text, 7)
-                
+# -------------------------
+# Virtual Controller (Add this to the end of your code)
+# -------------------------
+class VirtualController:
+    def __init__(self):
+        # ボタンの配置設定 (x, y, w, h)
+        self.btn_up = (25, 75, 15, 15)
+        self.btn_down = (25, 105, 15, 15)
+        self.btn_left = (5, 90, 15, 15)
+        self.btn_right = (45, 90, 15, 15)
+        self.btn_shot = (130, 90, 20, 20)
+
+    def update(self):
+        # 画面がタッチされているか確認
+        if pyxel.btn(pyxel.MOUSE_BUTTON_LEFT):
+            tx, ty = pyxel.mouse_x, pyxel.mouse_y
+            
+            # 各範囲をチェックし、Pyxelの内部キー状態を強制的に書き換える
+            # これにより player.update() 内の pyxel.btn(KEY) が True を返すようになります
+            if self._check(tx, ty, self.btn_up): self._press(pyxel.KEY_UP)
+            if self._check(tx, ty, self.btn_down): self._press(pyxel.KEY_DOWN)
+            if self._check(tx, ty, self.btn_left): self._press(pyxel.KEY_LEFT)
+            if self._check(tx, ty, self.btn_right): self._press(pyxel.KEY_RIGHT)
+            if self._check(tx, ty, self.btn_shot): self._press(pyxel.KEY_SPACE)
+
+    def _check(self, tx, ty, rect):
+        return rect[0] <= tx <= rect[0]+rect[2] and rect[1] <= ty <= rect[1]+rect[3]
+
+    def _press(self, key):
+        # Pyxelの内部状態にキー入力を注入（※最新のPyxel環境で有効）
+        pass # 実際には App.update() の冒頭でこのクラスを呼ぶだけで機能するようにします
+
+    def draw(self):
+        # ボタンの視覚表示（半透明）
+        # 十字キー
+        pyxel.rectb(*self.btn_up, 13)
+        pyxel.rectb(*self.btn_down, 13)
+        pyxel.rectb(*self.btn_left, 13)
+        pyxel.rectb(*self.btn_right, 13)
+        # ショットボタン
+        pyxel.circb(self.btn_shot[0]+10, self.btn_shot[1]+10, 10, 10)
+        pyxel.text(self.btn_shot[0]+7, self.btn_shot[1]+8, "SHOT", 7)
+
+# -------------------------
+# 既存のAppクラスを「一切触らず」に拡張する魔法のラッパー
+# -------------------------
+_original_update = App.update
+_original_draw = App.draw
+_v_controller = VirtualController()
+
+def wrapped_update(self):
+    # 既存のupdateが動く前にタッチ判定を行い、偽のキー入力をシミュレート
+    # スマホ操作をキーボード入力に「翻訳」します
+    tx, ty = pyxel.mouse_x, pyxel.mouse_y
+    is_touch = pyxel.btn(pyxel.MOUSE_BUTTON_LEFT)
+    
+    # 簡易的なモンキーパッチでpyxel.btnをハック
+    _old_btn = pyxel.btn
+    def custom_btn(key):
+        if is_touch:
+            if key == pyxel.KEY_UP and _v_controller._check(tx, ty, _v_controller.btn_up): return True
+            if key == pyxel.KEY_DOWN and _v_controller._check(tx, ty, _v_controller.btn_down): return True
+            if key == pyxel.KEY_LEFT and _v_controller._check(tx, ty, _v_controller.btn_left): return True
+            if key == pyxel.KEY_RIGHT and _v_controller._check(tx, ty, _v_controller.btn_right): return True
+            if key == pyxel.KEY_SPACE and _v_controller._check(tx, ty, _v_controller.btn_shot): return True
+            if key == pyxel.KEY_RETURN and is_touch: return True # タイトル飛ばし用
+        return _old_btn(key)
+    
+    pyxel.btn = custom_btn
+    _original_update(self)
+    pyxel.btn = _old_btn
+
+def wrapped_draw(self):
+    _original_draw(self)
+    # ゲーム中のみコントローラーを表示
+    if not getattr(self, 'show_title', True) and not getattr(self, 'game_over', False):
+        _v_controller.draw()
+
+# Appクラスのメソッドを差し替え（コードを触らずに上書き）
+App.update = wrapped_update
+App.draw = wrapped_draw                
 # Appクラスのインスタンス化と実行
 App() 

@@ -978,67 +978,7 @@ class VirtualController:
             pyxel.rectb(rx, ry, rw, rh, 7)
             pyxel.text(rx + 6, ry + 3, "TAP/KEY R!", 7)
 
-# -------------------------
-# 魔法のラッパー (外部パネル & 自動切替版)
-# -------------------------
-_original_update = App.update
-_original_draw = App.draw
-_v_controller = VirtualController()
 
-# 初期状態はPC向け（パネル非表示）
-is_mobile_mode = False
-
-def wrapped_update(self):
-    global is_mobile_mode
-    
-    # 画面下部(パネルエリア)がタップされたらスマホモードを起動
-    if pyxel.btn(pyxel.MOUSE_BUTTON_LEFT) and pyxel.mouse_y >= SCREEN_H:
-        is_mobile_mode = True
-
-    tx, ty = pyxel.mouse_x, pyxel.mouse_y
-    is_touch = pyxel.btn(pyxel.MOUSE_BUTTON_LEFT)
-    
-    _old_btn = pyxel.btn
-    _old_btnp = pyxel.btnp
-
-    # 入力の偽装
-    def custom_btn(key):
-        if is_mobile_mode and is_touch:
-            # 座標を判定してキー入力をシミュレート
-            if key == pyxel.KEY_UP and _v_controller._check(tx, ty, _v_controller.btn_up): return True
-            if key == pyxel.KEY_DOWN and _v_controller._check(tx, ty, _v_controller.btn_down): return True
-            if key == pyxel.KEY_LEFT and _v_controller._check(tx, ty, _v_controller.btn_left): return True
-            if key == pyxel.KEY_RIGHT and _v_controller._check(tx, ty, _v_controller.btn_right): return True
-            if key == pyxel.KEY_SPACE and _v_controller._check(tx, ty, _v_controller.btn_shot): return True
-        return _old_btn(key)
-
-    def custom_btnp(key):
-        if is_mobile_mode and is_touch:
-            if getattr(self, 'game_over', False) and key == pyxel.KEY_R:
-                if _v_controller._check(tx, ty, _v_controller.btn_restart): return True
-        return _old_btnp(key)
-    
-    pyxel.btn = custom_btn
-    pyxel.btnp = custom_btnp
-    _original_update(self)
-    pyxel.btn = _old_btn
-    pyxel.btnp = _old_btnp
-
-def wrapped_draw(self):
-    # 1. まず元のゲーム画面を描画
-    _original_draw(self)
-    
-    # 2. スマホモードの時だけ、ゲーム画面外（下）にパネルを描画
-    if is_mobile_mode:
-        # パネルの背景（黒）
-        pyxel.rect(0, SCREEN_H, SCREEN_W, PANEL_H, 0)
-        # 上の境界線（グレー）
-        pyxel.line(0, SCREEN_H, SCREEN_W, SCREEN_H, 7)
-        # 仮想ボタンの描画
-        _v_controller.draw(getattr(self, 'game_over', False))
-
-# メソッド差し替え
-App.update = wrapped_update
-App.draw = wrapped_draw
 # 実行
 App()
+

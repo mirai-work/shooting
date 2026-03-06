@@ -887,29 +887,39 @@ class App:
 
         self.player.draw()
 
-        # -------------------
-        # HUD (Head-Up Display)
+    # -------------------
+        # HUD (Head-Up Display) - 重なり解消レイアウト
         # -------------------
         
-        # SCORE (右上)
-        pyxel.text(SCREEN_W - 50, 5, f"SCORE:{self.score:05}", 10)
+        # 1. 中央：ゲームタイトル (短い形式にするか、位置を少し下げる)
+        # 画面幅いっぱいの場合は、タイトルのフォントを工夫するか少し下げます
+        full_title = "DRAGON AWAKENING" # 長すぎる場合はサブタイトルのみにするのも手です
+        title_x = (SCREEN_W // 2) - (len(full_title) * 2)
         
-        # STAGE (左上)
-        # self.stageは0から始まるため、表示は +1
-        pyxel.text(5, 5, f"STAGE:{self.stage + 1}", 7) 
+        # タイトルがスコアと重ならないよう、1行下にずらして配置
+        pyxel.text(title_x + 1, 10 + 1, full_title, 0) # 影
+        pyxel.text(title_x, 10, full_title, 10)       # メイン（金）
 
-        # LIFE表示 (右下: 調整後の位置)
-        pyxel.text(80, 110, "LIFE:", 7) 
-        for i in range(max(0, self.player.life)):
-            # ライフアイコンの位置をLIFE:の右隣に移動
-            px, py_ = 105 + i * 8, 112 
-            pyxel.circ(px, py_, 2, 11) 
+        # 2. 最上段：情報の左右振り分け
+        # 左上：STAGE数 (余白を確保)
+        pyxel.text(4, 4, f"ST:{self.stage + 1}", 7) 
         
-        # POWER表示 (左下: 調整後の位置)
-        pyxel.text(5, 110, "POWER:", 7)
+        # 右上：SCORE (表示を短くして右端へ)
+        score_text = f"SC:{self.score:05}"
+        pyxel.text(SCREEN_W - (len(score_text) * 4) - 4, 4, score_text, 10)
+
+        # 3. 最下段：ステータス情報 (左右に完全に分ける)
+        # 左下：POWER
+        pyxel.text(4, SCREEN_H - 8, "PWR:", 7)
         for i in range(self.player.power):
-            # パワーアイコンの位置をPOWER:の右隣に移動
-            pyxel.circ(45 + i * 8, 112, 2, 10) 
+            pyxel.rect(22 + i * 5, SCREEN_H - 7, 3, 3, 10) # 丸より四角の方が省スペース
+        
+        # 右下：LIFE (右端から逆算)
+        life_label = "LIFE:"
+        lx = SCREEN_W - 50
+        pyxel.text(lx, SCREEN_H - 8, life_label, 7)
+        for i in range(max(0, self.player.life)):
+            pyxel.rect(lx + 22 + i * 5, SCREEN_H - 7, 3, 3, 14)
 
         # Game over
         if self.game_over:

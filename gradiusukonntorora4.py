@@ -509,7 +509,7 @@ class App:
         if self.is_tutorial_interlude:
             # Tutorial interlude (Stage -1 -> 0, which is actual Stage 1)
             # End interlude only when user presses ENTER
-            if pyxel.btnp(pyxel.KEY_RETURN) and self.interlude_timer > 30:
+            if pyxel.btnp(pyxel.KEY_RETURN)or pyxel.btn(pyxel.GAMEPAD1_BUTTON_B) and self.interlude_timer > 30:
                 self.end_interlude()
             return
         
@@ -568,7 +568,7 @@ class App:
 
         # GAME OVER
         if self.game_over:
-            if pyxel.btnp(pyxel.KEY_R):
+            if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_A):
                 self.reset(is_initial_start=False)
                 self.start_interlude(is_tutorial=True) # Restart with tutorial
             return
@@ -806,10 +806,10 @@ class App:
                 
                 # Controls Text (調整された配置)
                 pyxel.text(box_x + 5, box_y + 30, "MOVE: UP/DOWN/LEFT/RIGHT KEYS", 7)
-                pyxel.text(box_x + 5, box_y + 40, "SHOOT: SPACE KEY", 7)
+                pyxel.text(box_x + 5, box_y + 40, "SHOOT: SPECE/A KEY", 7)
                 pyxel.text(box_x + 5, box_y + 55, "GREEN ENEMIES MUST BE DESTROYED.", 8)
                 pyxel.text(box_x + 5, box_y + 65, "POWERUPS (P) INCREASE FIREPOWER.", 10)
-                pyxel.text(box_x + 5, box_y + 78, "PRESS [ENTER] TO START STAGE 1", 11)
+                pyxel.text(box_x + 5, box_y + 78, "PRESS [RETURN/B] TO STAGE 1", 11)
 
             # Normal Interlude Screens (Stage 0 -> 1, etc.)
             else:
@@ -917,7 +917,7 @@ class App:
             pyxel.rectb(30, 45, 100, 50, 7)
             pyxel.text(55, 50, "G A M E  O V E R", 8)
             pyxel.text(40, 65, f"SCORE: {self.score:05}", 7)
-            pyxel.text(45, 80, "TAP/R PUSH!", 10)
+            pyxel.text(45, 80, "RETURN/A KEY!", 10)
 
         # Ending overlay (drawn on top when ending == True)
         if self.ending:
@@ -945,39 +945,9 @@ class App:
                 end_text = "DRAGON SLAYER"
                 pyxel.text(center_x - len(end_text)*2 + 1, center_y + 1, end_text, 0)
                 pyxel.text(center_x - len(end_text)*2, center_y, end_text, 7)
-# -------------------------
-# Virtual Controller (Rキー機能追加版)
-# -------------------------
-class VirtualController:
-    def __init__(self):
-        # 既存のボタン
-        self.btn_up = (25, 75, 15, 15)
-        self.btn_down = (25, 105, 15, 15)
-        self.btn_left = (5, 90, 15, 15)
-        self.btn_right = (45, 90, 15, 15)
-        self.btn_shot = (130, 90, 20, 20)
-        # リスタートボタン (画面中央付近)
-        self.btn_restart = (50, 80, 60, 12)
-
-    def _check(self, tx, ty, rect):
-        return rect[0] <= tx <= rect[0]+rect[2] and rect[1] <= ty <= rect[1]+rect[3]
-
-    def draw(self, is_game_over):
-        if not is_game_over:
-            # 通常時の操作ガイド
-            pyxel.rectb(*self.btn_up, 13)
-            pyxel.rectb(*self.btn_down, 13)
-            pyxel.rectb(*self.btn_left, 13)
-            pyxel.rectb(*self.btn_right, 13)
-            pyxel.circb(self.btn_shot[0]+10, self.btn_shot[1]+10, 10, 10)
-            pyxel.text(self.btn_shot[0]+7, self.btn_shot[1]+8, "SHOT", 7)
-        else:
-            # ゲームオーバー時のみリスタートボタンを表示
-            rx, ry, rw, rh = self.btn_restart
-            pyxel.rect(rx, ry, rw, rh, 2)
-            pyxel.rectb(rx, ry, rw, rh, 7)
-            pyxel.text(rx + 6, ry + 3, "TAP/KEY R!", 7)
 
 
 # 実行
 App()
+
+

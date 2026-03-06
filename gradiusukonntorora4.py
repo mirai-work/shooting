@@ -509,7 +509,7 @@ class App:
         if self.is_tutorial_interlude:
             # Tutorial interlude (Stage -1 -> 0, which is actual Stage 1)
             # End interlude only when user presses ENTER
-            if pyxel.btnp(pyxel.KEY_RETURN)or pyxel.btn(pyxel.GAMEPAD1_B) and self.interlude_timer > 30:
+            if pyxel.btnp(pyxel.KEY_RETURN)or pyxel.btn(pyxel.GAMEPAD1_BUTTON_B) and self.interlude_timer > 30:
                 self.end_interlude()
             return
         

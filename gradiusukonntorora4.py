@@ -509,7 +509,7 @@ class App:
         if self.is_tutorial_interlude:
             # Tutorial interlude (Stage -1 -> 0, which is actual Stage 1)
             # End interlude only when user presses ENTER
-            if pyxel.btnp(pyxel.KEY_RETURN)or pyxel.btn(pyxel.GAMEPAD1_C) and self.interlude_timer > 30:
+            if pyxel.btnp(pyxel.KEY_RETURN)or pyxel.btn(pyxel.GAMEPAD1_B) and self.interlude_timer > 30:
                 self.end_interlude()
             return
         
@@ -809,7 +809,7 @@ class App:
                 pyxel.text(box_x + 5, box_y + 40, "SHOOT: SPECE/A KEY", 7)
                 pyxel.text(box_x + 5, box_y + 55, "GREEN ENEMIES MUST BE DESTROYED.", 8)
                 pyxel.text(box_x + 5, box_y + 65, "POWERUPS (P) INCREASE FIREPOWER.", 10)
-                pyxel.text(box_x + 5, box_y + 78, "PRESS [RTN/C] TO STAGE 1", 11)
+                pyxel.text(box_x + 5, box_y + 78, "PRESS [RTN/B] TO STAGE 1", 11)
 
             # Normal Interlude Screens (Stage 0 -> 1, etc.)
             else:

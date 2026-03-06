@@ -509,7 +509,7 @@ class App:
         if self.is_tutorial_interlude:
             # Tutorial interlude (Stage -1 -> 0, which is actual Stage 1)
             # End interlude only when user presses ENTER
-            if pyxel.btnp(pyxel.KEY_RETURN)or pyxel.btn(pyxel.GAMEPAD1_BUTTON_B) and self.interlude_timer > 30:
+            if pyxel.btnp(pyxel.KEY_RETURN)or pyxel.btn(pyxel.GAMEPAD1_START) and self.interlude_timer > 30:
                 self.end_interlude()
             return
         
@@ -568,7 +568,7 @@ class App:
 
         # GAME OVER
         if self.game_over:
-            if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_A):
+            if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_START):
                 self.reset(is_initial_start=False)
                 self.start_interlude(is_tutorial=True) # Restart with tutorial
             return
@@ -809,7 +809,7 @@ class App:
                 pyxel.text(box_x + 5, box_y + 40, "SHOOT: SPECE/A KEY", 7)
                 pyxel.text(box_x + 5, box_y + 55, "GREEN ENEMIES MUST BE DESTROYED.", 8)
                 pyxel.text(box_x + 5, box_y + 65, "POWERUPS (P) INCREASE FIREPOWER.", 10)
-                pyxel.text(box_x + 5, box_y + 78, "PRESS [RETURN/B] TO STAGE 1", 11)
+                pyxel.text(box_x + 5, box_y + 78, "PRESS [RTN/START] TO STAGE 1", 11)
 
             # Normal Interlude Screens (Stage 0 -> 1, etc.)
             else:
@@ -927,7 +927,7 @@ class App:
             pyxel.rectb(30, 45, 100, 50, 7)
             pyxel.text(55, 50, "G A M E  O V E R", 8)
             pyxel.text(40, 65, f"SCORE: {self.score:05}", 7)
-            pyxel.text(45, 80, "RETURN/A KEY!", 10)
+            pyxel.text(45, 80, "RETURN/START KEY!", 10)
 
         # Ending overlay (drawn on top when ending == True)
         if self.ending:

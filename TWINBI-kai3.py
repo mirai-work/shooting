@@ -37,9 +37,9 @@ class Bell:
         pyxel.rect(self.x-4, self.y+1, 9, 2, c)
         pyxel.rect(self.x-1, self.y+3, 3, 1, 7)
 
-class TwinBeeHardBoss:
+class TwinBeeGraphicsUpdate:
     def __init__(self):
-        pyxel.init(WIDTH, HEIGHT, title="TwinBee: Sniper Boss")
+        pyxel.init(WIDTH, HEIGHT, title="TwinBee: Wing Graphics Update")
         self.scene = SCENE_TITLE
         self.reset_full_game()
         pyxel.run(self.update, self.draw)
@@ -116,7 +116,8 @@ class TwinBeeHardBoss:
             if abs(amb["x"] - target_x) < 4 and abs(amb["y"] - target_y) < 4:
                 for _ in range(5):
                     self.explosions.append({"x": amb["x"], "y": amb["y"], "r": 0})
-                self.p["arms"] = True; self.ambulance = None
+                self.p["arms"] = True # 救急箱取得で羽が復活
+                self.ambulance = None
 
     def respawn_player(self):
         self.p.update({"x": 80, "y": 100, "alive": True, "inv": 60, "arms": True, "speed": 2.0, "twin": False, "beam": False})
@@ -149,7 +150,6 @@ class TwinBeeHardBoss:
             bs["t"] += 1; bs["y"] = min(30, bs["y"] + 0.5)
             bs["x"] = 80 + math.sin(bs["t"] * 0.05) * 50
             if bs["flash"] > 0: bs["flash"] -= 1
-            # ボスの攻撃を強化：頻度を25フレームに、弾速を3.2に変更
             if bs["y"] >= 30 and bs["t"] % 25 == 0:
                 angle = math.atan2(self.p["y"] - bs["y"], self.p["x"] - bs["x"])
                 self.boss_bullets.append({"x": bs["x"], "y": bs["y"], "vx": math.cos(angle)*3.2, "vy": math.sin(angle)*3.2})
@@ -190,7 +190,7 @@ class TwinBeeHardBoss:
             e["t"] += 8; e["y"] += 2.0
             e["x"] = e["base_x"] + math.sin(math.radians(e["t"])) * 25
             if self.p["alive"] and self.p["inv"] == 0 and abs(e["x"]-self.p["x"]-4) < 7 and abs(e["y"]-self.p["y"]-4) < 7:
-                if self.p["arms"]: self.p["arms"] = False; self.p["inv"] = 30; e["y"] = 200
+                if self.p["arms"]: self.p["arms"] = False; self.p["inv"] = 30; e["y"] = 200 # 腕（羽）がもげる
                 else: self.p["alive"] = False
             for b in self.bullets:
                 if not b["dead"] and abs(b["x"]-e["x"]) < 8 and abs(b["y"]-e["y"]) < 8:
@@ -264,9 +264,18 @@ class TwinBeeHardBoss:
 
     def draw_twinbee(self, x, y, arms):
         wing_y = math.sin(self.frame * 0.6) * 2
-        pyxel.tri(x-2, y+2, x-6, y+wing_y, x-2, y+6, 7); pyxel.tri(x+10, y+2, x+14, y+wing_y, x+10, y+6, 7)
-        pyxel.circ(x+4, y+4, 5, 12); pyxel.circ(x+4, y+3, 3, 6); pyxel.pset(x+3, y+2, 7)
-        pyxel.rect(x+1, y+8, 2, 2, 10); pyxel.rect(x+5, y+8, 2, 2, 10)
+        # 羽（白い三角形）の描画。腕がある時だけ左右に表示。
+        if arms:
+            pyxel.tri(x-2, y+2, x-6, y+wing_y, x-2, y+6, 7) # 左羽
+            pyxel.tri(x+10, y+2, x+14, y+wing_y, x+10, y+6, 7) # 右羽
+            
+        pyxel.circ(x+4, y+4, 5, 12) # ボディ
+        pyxel.circ(x+4, y+3, 3, 6) # キャノピー
+        pyxel.pset(x+3, y+2, 7)
+        pyxel.rect(x+1, y+8, 2, 2, 10) # 足
+        pyxel.rect(x+5, y+8, 2, 2, 10)
+        
+        # 腕（黄色いパンチ部分）の描画
         if arms:
             pyxel.rect(x-1, y+4, 2, 4, 7); pyxel.circ(x, y+8, 1, 10)
             pyxel.rect(x+7, y+4, 2, 4, 7); pyxel.circ(x+8, y+8, 1, 10)
@@ -287,4 +296,4 @@ class TwinBeeHardBoss:
         pyxel.circ(x, y, 15, col); pyxel.tri(x-15, y, x+15, y, x, y-25, col)
         pyxel.rect(x-2, y-28, 4, 6, 3); pyxel.rect(x-6, y-2, 2, 4, 0); pyxel.rect(x+4, y-2, 2, 4, 0)
 
-TwinBeeHardBoss()
+TwinBeeGraphicsUpdate()

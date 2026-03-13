@@ -30,16 +30,16 @@ class Bell:
         elif self.hit_count > 30: self.state = 5
 
     def draw(self):
-        colors = [10, 7, 12, 11, 8, 0]
+        colors = [10, 7, 12, 11, 8, 0] # 黄色、白、青、緑、赤、黒
         c = colors[self.state]
         pyxel.circ(self.x, self.y-2, 3, c)
         pyxel.rect(self.x-3, self.y-2, 7, 4, c)
         pyxel.rect(self.x-4, self.y+1, 9, 2, c)
         pyxel.rect(self.x-1, self.y+3, 3, 1, 7)
 
-class TwinBeeGraphicsUpdate:
+class TwinBeeBellRestored:
     def __init__(self):
-        pyxel.init(WIDTH, HEIGHT, title="TwinBee: Wing Graphics Update")
+        pyxel.init(WIDTH, HEIGHT, title="TwinBee: Bell Restored")
         self.scene = SCENE_TITLE
         self.reset_full_game()
         pyxel.run(self.update, self.draw)
@@ -52,6 +52,7 @@ class TwinBeeGraphicsUpdate:
         self.explosions = []
         self.particles = []
         self.ground_kill_count = 0
+        # 雲にベルを持たせるフラグをTrueに
         self.clouds = [{"x": random.randint(10, 150), "y": random.randint(-50, 80), "has_bell": True} for _ in range(4)]
         self.boss = None
         self.boss_guards = []
@@ -116,7 +117,7 @@ class TwinBeeGraphicsUpdate:
             if abs(amb["x"] - target_x) < 4 and abs(amb["y"] - target_y) < 4:
                 for _ in range(5):
                     self.explosions.append({"x": amb["x"], "y": amb["y"], "r": 0})
-                self.p["arms"] = True # 救急箱取得で羽が復活
+                self.p["arms"] = True
                 self.ambulance = None
 
     def respawn_player(self):
@@ -158,15 +159,32 @@ class TwinBeeGraphicsUpdate:
     def process_collisions(self):
         for b in self.bullets: b["x"] += b["vx"]; b["y"] += b["vy"]
         for m in self.missiles: m["y"] += m["vy"]
+        
+        # 雲を撃つとベルが出る判定を復活
+        for c in self.clouds:
+            for b in self.bullets:
+                if not b["dead"] and abs(b["x"]-c["x"]) < 10 and abs(b["y"]-c["y"]) < 10:
+                    if c["has_bell"]:
+                        self.bells.append(Bell(c["x"], c["y"]))
+                        c["has_bell"] = False
+                    b["dead"] = True
+
         for it in self.items:
             it["y"] += 1
             if abs(it["x"] - self.p["x"]) < 8 and abs(it["y"] - self.p["y"]) < 8:
                 self.p["beam"] = True; it["dead"] = True
+                
+        # ベルの更新と弾が当たった時の色変化
         for bl in self.bells:
             bl.update()
+            # ベルを撃った時の色変化
+            for b in self.bullets:
+                if not b["dead"] and abs(b["x"]-bl.x) < 8 and abs(b["y"]-bl.y) < 8:
+                    bl.hit(); b["dead"] = True
+            # ベルの取得判定
             if self.p["alive"] and abs(bl.x-self.p["x"]-4) < 8 and abs(bl.y-self.p["y"]-4) < 8:
-                if bl.state == 1: self.p["twin"] = True
-                elif bl.state == 2: self.p["speed"] = min(3.5, self.p["speed"] + 0.4)
+                if bl.state == 1: self.p["twin"] = True # 白: ツイン
+                elif bl.state == 2: self.p["speed"] = min(3.5, self.p["speed"] + 0.4) # 青: スピード
                 self.score += 500; bl.dead = True
 
         for b in self.bullets:
@@ -190,7 +208,7 @@ class TwinBeeGraphicsUpdate:
             e["t"] += 8; e["y"] += 2.0
             e["x"] = e["base_x"] + math.sin(math.radians(e["t"])) * 25
             if self.p["alive"] and self.p["inv"] == 0 and abs(e["x"]-self.p["x"]-4) < 7 and abs(e["y"]-self.p["y"]-4) < 7:
-                if self.p["arms"]: self.p["arms"] = False; self.p["inv"] = 30; e["y"] = 200 # 腕（羽）がもげる
+                if self.p["arms"]: self.p["arms"] = False; self.p["inv"] = 30; e["y"] = 200
                 else: self.p["alive"] = False
             for b in self.bullets:
                 if not b["dead"] and abs(b["x"]-e["x"]) < 8 and abs(b["y"]-e["y"]) < 8:
@@ -264,18 +282,16 @@ class TwinBeeGraphicsUpdate:
 
     def draw_twinbee(self, x, y, arms):
         wing_y = math.sin(self.frame * 0.6) * 2
-        # 羽（白い三角形）の描画。腕がある時だけ左右に表示。
         if arms:
-            pyxel.tri(x-2, y+2, x-6, y+wing_y, x-2, y+6, 7) # 左羽
-            pyxel.tri(x+10, y+2, x+14, y+wing_y, x+10, y+6, 7) # 右羽
+            pyxel.tri(x-2, y+2, x-6, y+wing_y, x-2, y+6, 7) 
+            pyxel.tri(x+10, y+2, x+14, y+wing_y, x+10, y+6, 7) 
             
-        pyxel.circ(x+4, y+4, 5, 12) # ボディ
-        pyxel.circ(x+4, y+3, 3, 6) # キャノピー
+        pyxel.circ(x+4, y+4, 5, 12)
+        pyxel.circ(x+4, y+3, 3, 6)
         pyxel.pset(x+3, y+2, 7)
-        pyxel.rect(x+1, y+8, 2, 2, 10) # 足
+        pyxel.rect(x+1, y+8, 2, 2, 10)
         pyxel.rect(x+5, y+8, 2, 2, 10)
         
-        # 腕（黄色いパンチ部分）の描画
         if arms:
             pyxel.rect(x-1, y+4, 2, 4, 7); pyxel.circ(x, y+8, 1, 10)
             pyxel.rect(x+7, y+4, 2, 4, 7); pyxel.circ(x+8, y+8, 1, 10)
@@ -296,4 +312,4 @@ class TwinBeeGraphicsUpdate:
         pyxel.circ(x, y, 15, col); pyxel.tri(x-15, y, x+15, y, x, y-25, col)
         pyxel.rect(x-2, y-28, 4, 6, 3); pyxel.rect(x-6, y-2, 2, 4, 0); pyxel.rect(x+4, y-2, 2, 4, 0)
 
-TwinBeeGraphicsUpdate()
+TwinBeeBellRestored()

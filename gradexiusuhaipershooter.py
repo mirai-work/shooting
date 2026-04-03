@@ -501,7 +501,7 @@ class App:
     MAX_STAGE = 5
 
     def __init__(self):
-        pyxel.init(SCREEN_W, SCREEN_H, title="HYPER SHOOTER 2025")
+        pyxel.init(SCREEN_W, SCREEN_H, title="HYPER SHOOTER 2026")
         
         self.loop_count = 0
         self.mode = "TITLE"
@@ -826,7 +826,7 @@ class App:
                 r = 1 + e['life'] * 0.1
                 pyxel.circ(int(e['x']), int(e['y']), max(1,int(r)), color)
             
-            title_text = "HYPER SHOOTER"
+            title_text = "HYPER SHOOTER 2026"
             title_len = len(title_text) * 4 # Pyxelのデフォルト文字幅は4px
             title_x = SCREEN_W//2 - title_len//2
             title_y = SCREEN_H//2 - 20
@@ -840,7 +840,7 @@ class App:
             
             pyxel.text(SCREEN_W//2 - 36, SCREEN_H//2 + 10, "PRESS SPACE OR START", 7)
             
-            pyxel.text(SCREEN_W - 70, SCREEN_H - 10, "(C)M.Takahashi", 5)
+            pyxel.text(SCREEN_W - 70, SCREEN_H - 10, "(C)MIRAIWORK/M.T", 5)
 
             self.player.draw_icon(self.title_ship_x, SCREEN_H//2+30)
             
@@ -862,8 +862,8 @@ class App:
             pyxel.text(SCREEN_W//2 - 20, credit_y + 20, "GREAT JOB!", 7)
             pyxel.text(SCREEN_W//2 - 30, credit_y + 40, f"LOOP {self.loop_count + 1} COMPLETED", 13)
             
-            pyxel.text(SCREEN_W//2 - 70, credit_y + 70, "PROGRAMMING & DESIGN", 10)
-            pyxel.text(SCREEN_W//2 - 70, credit_y + 80, "M.Takahashi", 7)
+            pyxel.text(SCREEN_W//2 - 70, credit_y + 70, "PROGRAMMING M.T", 10)
+            pyxel.text(SCREEN_W//2 - 70, credit_y + 80, "（C)MIRAIWORK 2026" , 7)
             
             pyxel.text(SCREEN_W//2 - 70, credit_y + 100, "THANKS FOR PLAYING!", 12)
 

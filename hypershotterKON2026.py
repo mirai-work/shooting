@@ -3,14 +3,8 @@
 import pyxel
 import random
 import math
-import os
 
-# ★シーマイクコントローラ(ASC-1606SM)用のマッピング設定
-# 画像のPADCHECK結果に基づき、ボタンとハットスイッチ(h0.x)を統合します
-mapping = "03000000490b00004406000000000000,ASCII Game Controller,a:b0,b:b1,x:b3,y:b2,back:b8,start:b9,leftshoulder:b4,rightshoulder:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,platform:Windows,"
-os.environ["SDL_GAMECONTROLLERCONFIG"] = mapping
 
-# --- 定数 ---
 # --- 定数 ---
 # (既存の定数はそのまま保持)
 SCREEN_W = 160
